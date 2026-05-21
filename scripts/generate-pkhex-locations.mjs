@@ -3,7 +3,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const pkhexRoot = path.resolve(repoRoot, "../calc-analytics/PKHeX/PKHeX.Core/Resources/text/locations");
+const pkhexCoreRoot = process.env.PKHEX_CORE_ROOT;
+if (!pkhexCoreRoot) {
+  throw new Error("Set PKHEX_CORE_ROOT to the local PKHeX.Core directory before running this generator.");
+}
+const pkhexRoot = path.resolve(pkhexCoreRoot, "Resources/text/locations");
 const outFile = path.join(repoRoot, "src/data/pkhexLocations.ts");
 
 const sources = {

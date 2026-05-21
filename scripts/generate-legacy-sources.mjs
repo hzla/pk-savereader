@@ -3,7 +3,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const calcRoot = path.resolve(repoRoot, "../calc-analytics/Dynamic-Calc-Hgengine");
+const calcRoot = process.env.DYNAMIC_CALC_ROOT;
+if (!calcRoot) {
+  throw new Error("Set DYNAMIC_CALC_ROOT to the local Dynamic-Calc-Hgengine directory before running this generator.");
+}
 const outFile = path.join(repoRoot, "src/legacy/generatedSources.ts");
 
 const files = [

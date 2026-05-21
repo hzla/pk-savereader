@@ -3,7 +3,11 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const pkhexRoot = resolve(root, "../calc-analytics/PKHeX/PKHeX.Core/Resources/text/script");
+const pkhexCoreRoot = process.env.PKHEX_CORE_ROOT;
+if (!pkhexCoreRoot) {
+  throw new Error("Set PKHEX_CORE_ROOT to the local PKHeX.Core directory before running this generator.");
+}
+const pkhexRoot = resolve(pkhexCoreRoot, "Resources/text/script");
 const outFile = resolve(root, "src/data/flagLabels.ts");
 
 const sources = {
