@@ -1,0 +1,36 @@
+{
+  "name": "romhack-save-reader",
+  "version": "0.1.0",
+  "description": "Browser-native save readers for Pokemon romhacks and vanilla save files.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "docs",
+    "SUPPORTED_TITLES.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "generate:flags": "node scripts/generate-flag-labels.mjs",
+    "generate:legacy": "node scripts/generate-legacy-sources.mjs",
+    "generate:locations": "node scripts/generate-pkhex-locations.mjs",
+    "generate:supported": "node scripts/generate-supported-titles.mjs",
+    "docs": "typedoc",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "verify": "npm run generate:legacy && npm run generate:flags && npm run generate:locations && npm run generate:supported && npm run build && npm test"
+  },
+  "devDependencies": {
+    "typedoc": "^0.28.14",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.13"
+  }
+}

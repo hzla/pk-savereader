@@ -1,0 +1,391 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>romhack-save-reader</title><meta name="description" content="Documentation for romhack-save-reader"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script><script async src="assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="index.html" class="title">romhack-save-reader</a><div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>romhack-save-reader</h1></div><div class="tsd-panel tsd-typography"><h1 id="romhack-save-reader" class="tsd-anchor-link">romhack-save-reader<a href="#romhack-save-reader" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
+<p>Browser-native save readers for Pokemon romhacks and vanilla games supported by Dynamic Calc.</p>
+<pre><code class="ts"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">parseSave</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;romhack-save-reader&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">input</span><span class="hl-1"> = </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-6">querySelector</span><span class="hl-1">&lt;</span><span class="hl-7">HTMLInputElement</span><span class="hl-1">&gt;(</span><span class="hl-3">&quot;#save&quot;</span><span class="hl-1">)!;</span><br/><span class="hl-2">input</span><span class="hl-1">.</span><span class="hl-6">addEventListener</span><span class="hl-1">(</span><span class="hl-3">&quot;change&quot;</span><span class="hl-1">, </span><span class="hl-4">async</span><span class="hl-1"> () </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">file</span><span class="hl-1"> = </span><span class="hl-2">input</span><span class="hl-1">.</span><span class="hl-2">files</span><span class="hl-1">?.[</span><span class="hl-8">0</span><span class="hl-1">];</span><br/><span class="hl-1">  </span><span class="hl-0">if</span><span class="hl-1"> (!</span><span class="hl-2">file</span><span class="hl-1">) </span><span class="hl-0">return</span><span class="hl-1">;</span><br/><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">result</span><span class="hl-1"> = </span><span class="hl-6">parseSave</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-2">baseGame:</span><span class="hl-1"> </span><span class="hl-3">&quot;C&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&quot;Crystal Clear&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">save:</span><span class="hl-1"> </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">file</span><span class="hl-1">.</span><span class="hl-6">arrayBuffer</span><span class="hl-1">()</span><br/><span class="hl-1">  });</span><br/><br/><span class="hl-1">  </span><span class="hl-6">renderParty</span><span class="hl-1">(</span><span class="hl-2">result</span><span class="hl-1">.</span><span class="hl-2">party</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-6">renderBoxes</span><span class="hl-1">(</span><span class="hl-2">result</span><span class="hl-1">.</span><span class="hl-2">boxes</span><span class="hl-1">);</span><br/><span class="hl-1">});</span>
+</code><button type="button">Copy</button></pre>
+
+<h2 id="api" class="tsd-anchor-link">API<a href="#api" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<ul>
+<li><code>parseSave({ baseGame, title, save, options })</code> parses a raw save file and returns structured party/box data plus Showdown text. <code>title</code> is optional and enables romhack-specific adjustments when the title is registered.</li>
+<li><code>parseSave({ title, save, options })</code> is still supported for registered titles. Unknown titles should be retried with an explicit <code>baseGame</code>.</li>
+<li><code>listSupportedTitles()</code> returns registered titles and parser families.</li>
+<li><code>resolveSaveProfile(title)</code> returns the routing profile used by <code>parseSave</code>.</li>
+<li><code>toShowdown(result)</code> returns the compatibility Showdown import text.</li>
+</ul>
+<pre><code class="ts"><span class="hl-6">parseSave</span><span class="hl-1">({ </span><span class="hl-2">baseGame:</span><span class="hl-1"> </span><span class="hl-3">&quot;RB&quot;</span><span class="hl-1">, </span><span class="hl-2">save</span><span class="hl-1"> });</span><br/><span class="hl-6">parseSave</span><span class="hl-1">({ </span><span class="hl-2">baseGame:</span><span class="hl-1"> </span><span class="hl-3">&quot;C&quot;</span><span class="hl-1">, </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&quot;Crystal Clear&quot;</span><span class="hl-1">, </span><span class="hl-2">save</span><span class="hl-1"> });</span><br/><span class="hl-6">parseSave</span><span class="hl-1">({ </span><span class="hl-2">baseGame:</span><span class="hl-1"> </span><span class="hl-3">&quot;run_and_bun&quot;</span><span class="hl-1">, </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&quot;Pokemon Run &amp; Bun&quot;</span><span class="hl-1">, </span><span class="hl-2">save</span><span class="hl-1"> });</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Every parsed Pokemon includes stable position fields. Party Pokemon expose zero-based <code>partyIndex</code> and one-based <code>partySlot</code>; boxed Pokemon expose one-based <code>box</code>, zero-based <code>boxIndex</code>, zero-based <code>boxSlotIndex</code>, and one-based <code>boxSlot</code>. The legacy-compatible <code>slot</code> field mirrors <code>partySlot</code> or <code>boxSlot</code>.</p>
+<p><code>parseSave</code> also exposes <code>eventFlags</code> and <code>hallOfFame</code> for vanilla/basegame-derived profiles. These are intentionally disabled for Radical Red, Unbound, Emerald Imperium, Pokemon Null, and Run &amp; Bun until their heavily customized layouts are modeled directly.</p>
+<p><code>eventFlags.activeFlags</code> contains labeled, currently-set event flags sourced from PKHeX's known flag lists. <code>eventFlags.works</code> contains non-zero EventWork values for developers who need lower-level progression counters.</p>
+<p><code>hallOfFame</code> parses team/species entries for Gen 3, Gen 4, Gen 5, Gen 6, and Gen 7 layouts when present. Gen 5 BW/B2W2 uses the Dendou circular Hall of Fame records from the external save area.</p>
+<h3 id="pokemon-return-shape" class="tsd-anchor-link">Pokemon return shape<a href="#pokemon-return-shape" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p><code>result.party</code>, <code>result.boxMons</code>, and each <code>result.boxes[n].pokemon</code> entry contain <code>ParsedPokemon</code> objects. Fields vary by generation and romhack, but the stable shape is:</p>
+<pre><code class="ts"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pokemon</span><span class="hl-1"> = </span><span class="hl-2">result</span><span class="hl-1">.</span><span class="hl-2">party</span><span class="hl-1">[</span><span class="hl-8">0</span><span class="hl-1">];</span><br/><br/><span class="hl-9">// Example ParsedPokemon</span><br/><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-10">speciesId</span><span class="hl-1">: </span><span class="hl-8">389</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">speciesName</span><span class="hl-1">: </span><span class="hl-3">&quot;Torterra&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">nickname</span><span class="hl-1">: </span><span class="hl-3">&quot;TURTWIG&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">level</span><span class="hl-1">: </span><span class="hl-8">64</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">gender</span><span class="hl-1">: </span><span class="hl-3">&quot;M&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">nature</span><span class="hl-1">: </span><span class="hl-3">&quot;Adamant&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">ability</span><span class="hl-1">: </span><span class="hl-3">&quot;Overgrow&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">abilitySlot</span><span class="hl-1">: </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">item</span><span class="hl-1">: </span><span class="hl-3">&quot;Leftovers&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">trainerId</span><span class="hl-1">: </span><span class="hl-8">12345</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">moves</span><span class="hl-1">: [</span><br/><span class="hl-1">    { </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">89</span><span class="hl-1">, </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&quot;Earthquake&quot;</span><span class="hl-1"> },</span><br/><span class="hl-1">    { </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">242</span><span class="hl-1">, </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&quot;Crunch&quot;</span><span class="hl-1"> },</span><br/><span class="hl-1">    { </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">348</span><span class="hl-1">, </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&quot;Leaf Blade&quot;</span><span class="hl-1"> },</span><br/><span class="hl-1">    { </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">444</span><span class="hl-1">, </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&quot;Stone Edge&quot;</span><span class="hl-1"> }</span><br/><span class="hl-1">  ],</span><br/><span class="hl-1">  </span><span class="hl-10">evs</span><span class="hl-1">: { </span><span class="hl-10">hp</span><span class="hl-1">: </span><span class="hl-8">252</span><span class="hl-1">, </span><span class="hl-10">atk</span><span class="hl-1">: </span><span class="hl-8">252</span><span class="hl-1">, </span><span class="hl-10">def</span><span class="hl-1">: </span><span class="hl-8">0</span><span class="hl-1">, </span><span class="hl-10">spa</span><span class="hl-1">: </span><span class="hl-8">0</span><span class="hl-1">, </span><span class="hl-10">spd</span><span class="hl-1">: </span><span class="hl-8">4</span><span class="hl-1">, </span><span class="hl-10">spe</span><span class="hl-1">: </span><span class="hl-8">0</span><span class="hl-1"> },</span><br/><span class="hl-1">  </span><span class="hl-10">ivs</span><span class="hl-1">: { </span><span class="hl-10">hp</span><span class="hl-1">: </span><span class="hl-8">31</span><span class="hl-1">, </span><span class="hl-10">atk</span><span class="hl-1">: </span><span class="hl-8">31</span><span class="hl-1">, </span><span class="hl-10">def</span><span class="hl-1">: </span><span class="hl-8">31</span><span class="hl-1">, </span><span class="hl-10">spa</span><span class="hl-1">: </span><span class="hl-8">31</span><span class="hl-1">, </span><span class="hl-10">spd</span><span class="hl-1">: </span><span class="hl-8">31</span><span class="hl-1">, </span><span class="hl-10">spe</span><span class="hl-1">: </span><span class="hl-8">31</span><span class="hl-1"> },</span><br/><span class="hl-1">  </span><span class="hl-10">metLocation</span><span class="hl-1">: </span><span class="hl-3">&quot;Route 201&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">isEgg</span><span class="hl-1">: </span><span class="hl-4">false</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">isParty</span><span class="hl-1">: </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">partyIndex</span><span class="hl-1">: </span><span class="hl-8">0</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">partySlot</span><span class="hl-1">: </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">slot</span><span class="hl-1">: </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">source</span><span class="hl-1">: {</span><br/><span class="hl-1">    </span><span class="hl-10">offset</span><span class="hl-1">: </span><span class="hl-8">15328</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-10">encrypted</span><span class="hl-1">: </span><span class="hl-4">true</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Boxed Pokemon use the same object shape with box position fields:</p>
+<pre><code class="ts"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">boxed</span><span class="hl-1"> = </span><span class="hl-2">result</span><span class="hl-1">.</span><span class="hl-2">boxMons</span><span class="hl-1">[</span><span class="hl-8">0</span><span class="hl-1">];</span><br/><br/><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-10">speciesName</span><span class="hl-1">: </span><span class="hl-3">&quot;Bulbasaur&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">level</span><span class="hl-1">: </span><span class="hl-8">12</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">moves</span><span class="hl-1">: [{ </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&quot;Tackle&quot;</span><span class="hl-1"> }, { </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&quot;Growl&quot;</span><span class="hl-1"> }],</span><br/><span class="hl-1">  </span><span class="hl-10">isParty</span><span class="hl-1">: </span><span class="hl-4">false</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">box</span><span class="hl-1">: </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">boxIndex</span><span class="hl-1">: </span><span class="hl-8">0</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">boxSlot</span><span class="hl-1">: </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">boxSlotIndex</span><span class="hl-1">: </span><span class="hl-8">0</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">slot</span><span class="hl-1">: </span><span class="hl-8">1</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Top-level box grouping is available through <code>result.boxes</code>:</p>
+<pre><code class="ts"><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-10">box</span><span class="hl-1">: </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">name</span><span class="hl-1">: </span><span class="hl-3">&quot;Box 1&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">pokemon</span><span class="hl-1">: [</span><span class="hl-9">/* ParsedPokemon[] */</span><span class="hl-1">]</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="hall-of-fame-data" class="tsd-anchor-link">Hall of Fame data<a href="#hall-of-fame-data" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Hall of Fame data is returned as <code>result.hallOfFame</code> when the selected base game has a supported HoF layout and the save contains readable records.</p>
+<pre><code class="ts"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">result</span><span class="hl-1"> = </span><span class="hl-6">parseSave</span><span class="hl-1">({ </span><span class="hl-2">baseGame:</span><span class="hl-1"> </span><span class="hl-3">&quot;Pt&quot;</span><span class="hl-1">, </span><span class="hl-2">save</span><span class="hl-1"> });</span><br/><br/><span class="hl-0">if</span><span class="hl-1"> (</span><span class="hl-2">result</span><span class="hl-1">.</span><span class="hl-2">hallOfFame</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-2">result</span><span class="hl-1">.</span><span class="hl-2">hallOfFame</span><span class="hl-1">.</span><span class="hl-2">format</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-2">result</span><span class="hl-1">.</span><span class="hl-2">hallOfFame</span><span class="hl-1">.</span><span class="hl-2">clearCount</span><span class="hl-1">);</span><br/><br/><span class="hl-1">  </span><span class="hl-0">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">entry</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> </span><span class="hl-2">result</span><span class="hl-1">.</span><span class="hl-2">hallOfFame</span><span class="hl-1">.</span><span class="hl-2">entries</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">`Entry </span><span class="hl-4">${</span><span class="hl-2">entry</span><span class="hl-11">.</span><span class="hl-2">index</span><span class="hl-4">}</span><span class="hl-3">`</span><span class="hl-1">, </span><span class="hl-2">entry</span><span class="hl-1">.</span><span class="hl-2">date</span><span class="hl-1">);</span><br/><br/><span class="hl-1">    </span><span class="hl-0">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">pokemon</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> </span><span class="hl-2">entry</span><span class="hl-1">.</span><span class="hl-2">pokemon</span><span class="hl-1">) {</span><br/><span class="hl-1">      </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">({</span><br/><span class="hl-1">        </span><span class="hl-2">slot:</span><span class="hl-1"> </span><span class="hl-2">pokemon</span><span class="hl-1">.</span><span class="hl-2">source</span><span class="hl-1">?.</span><span class="hl-2">slot</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">species:</span><span class="hl-1"> </span><span class="hl-2">pokemon</span><span class="hl-1">.</span><span class="hl-2">speciesName</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">level:</span><span class="hl-1"> </span><span class="hl-2">pokemon</span><span class="hl-1">.</span><span class="hl-2">level</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">moves:</span><span class="hl-1"> </span><span class="hl-2">pokemon</span><span class="hl-1">.</span><span class="hl-2">moves</span><span class="hl-1">?.</span><span class="hl-6">map</span><span class="hl-1">((</span><span class="hl-2">move</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-2">move</span><span class="hl-1">.</span><span class="hl-2">name</span><span class="hl-1">)</span><br/><span class="hl-1">      });</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p><code>hallOfFame.entries</code> is ordered by stored record index. Individual Pokemon records include the data available for that generation, such as <code>speciesName</code>, <code>level</code>, <code>form</code>, <code>gender</code>, <code>isShiny</code>, <code>moves</code>, <code>trainerId</code>, <code>secretId</code>, and a <code>source</code> object with low-level record metadata.</p>
+<p>The return shape looks like this:</p>
+<pre><code class="ts"><span class="hl-9">// Example ParsedHallOfFame</span><br/><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-10">gameKey</span><span class="hl-1">: </span><span class="hl-3">&quot;platinum&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">format</span><span class="hl-1">: </span><span class="hl-3">&quot;gen4-dendou&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">clearCount</span><span class="hl-1">: </span><span class="hl-8">3</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">nextIndex</span><span class="hl-1">: </span><span class="hl-8">3</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">entries</span><span class="hl-1">: [</span><br/><span class="hl-1">    {</span><br/><span class="hl-1">      </span><span class="hl-2">index:</span><span class="hl-1"> </span><span class="hl-8">0</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">clearIndex:</span><span class="hl-1"> </span><span class="hl-8">3</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">date:</span><span class="hl-1"> </span><span class="hl-3">&quot;2024-05-06&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">pokemon:</span><span class="hl-1"> [</span><br/><span class="hl-1">        {</span><br/><span class="hl-1">          </span><span class="hl-2">speciesId:</span><span class="hl-1"> </span><span class="hl-8">491</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-2">speciesName:</span><span class="hl-1"> </span><span class="hl-3">&quot;Darkrai&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-2">nickname:</span><span class="hl-1"> </span><span class="hl-3">&quot;DARKRAI&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-2">level:</span><span class="hl-1"> </span><span class="hl-8">100</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-2">form:</span><span class="hl-1"> </span><span class="hl-8">0</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-2">gender:</span><span class="hl-1"> </span><span class="hl-3">&quot;N&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-2">trainerId:</span><span class="hl-1"> </span><span class="hl-8">12345</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-2">secretId:</span><span class="hl-1"> </span><span class="hl-8">54321</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-2">moves:</span><span class="hl-1"> [</span><br/><span class="hl-1">            { </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">399</span><span class="hl-1">, </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&quot;Dark Pulse&quot;</span><span class="hl-1"> },</span><br/><span class="hl-1">            { </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">94</span><span class="hl-1">, </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&quot;Psychic&quot;</span><span class="hl-1"> }</span><br/><span class="hl-1">          ],</span><br/><span class="hl-1">          </span><span class="hl-2">source:</span><span class="hl-1"> { </span><span class="hl-2">slot:</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1"> }</span><br/><span class="hl-1">        }</span><br/><span class="hl-1">      ],</span><br/><span class="hl-1">      </span><span class="hl-2">source:</span><span class="hl-1"> { </span><span class="hl-2">physicalRecordIndex:</span><span class="hl-1"> </span><span class="hl-8">0</span><span class="hl-1"> }</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  ],</span><br/><span class="hl-1">  </span><span class="hl-10">source</span><span class="hl-1">: {</span><br/><span class="hl-1">    </span><span class="hl-10">checksumValid</span><span class="hl-1">: </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-10">revision</span><span class="hl-1">: </span><span class="hl-8">3</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="event-flags-and-badges" class="tsd-anchor-link">Event flags and badges<a href="#event-flags-and-badges" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Known event flags are returned as <code>result.eventFlags</code> for supported vanilla/basegame-derived profiles. Each labeled flag has an <code>id</code>, <code>label</code>, optional <code>category</code>, and boolean <code>value</code>.</p>
+<pre><code class="ts"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">result</span><span class="hl-1"> = </span><span class="hl-6">parseSave</span><span class="hl-1">({ </span><span class="hl-2">baseGame:</span><span class="hl-1"> </span><span class="hl-3">&quot;E&quot;</span><span class="hl-1">, </span><span class="hl-2">save</span><span class="hl-1"> });</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">activeFlags</span><span class="hl-1"> = </span><span class="hl-2">result</span><span class="hl-1">.</span><span class="hl-2">eventFlags</span><span class="hl-1">?.</span><span class="hl-2">activeFlags</span><span class="hl-1"> ?? [];</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">activeStoryFlags</span><span class="hl-1"> = </span><span class="hl-2">activeFlags</span><span class="hl-1">.</span><span class="hl-6">map</span><span class="hl-1">((</span><span class="hl-2">flag</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> ({</span><br/><span class="hl-1">  </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-2">flag</span><span class="hl-1">.</span><span class="hl-2">id</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">label:</span><span class="hl-1"> </span><span class="hl-2">flag</span><span class="hl-1">.</span><span class="hl-2">label</span><br/><span class="hl-1">}));</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Badge ownership is represented by labeled event flags for games whose PKHeX flag resources expose badge labels. For those games, filter the full flag list so you can show both obtained and missing badges:</p>
+<pre><code class="ts"><span class="hl-0">import</span><span class="hl-1"> </span><span class="hl-0">type</span><span class="hl-1"> { </span><span class="hl-2">ParsedEventFlags</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;romhack-save-reader&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">function</span><span class="hl-1"> </span><span class="hl-6">getBadgeFlags</span><span class="hl-1">(</span><span class="hl-2">eventFlags</span><span class="hl-1">?: </span><span class="hl-7">ParsedEventFlags</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-0">return</span><span class="hl-1"> (</span><span class="hl-2">eventFlags</span><span class="hl-1">?.</span><span class="hl-2">flags</span><span class="hl-1"> ?? [])</span><br/><span class="hl-1">    .</span><span class="hl-6">filter</span><span class="hl-1">((</span><span class="hl-2">flag</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-12"> /</span><span class="hl-13">\b</span><span class="hl-12">badge</span><span class="hl-13">\b</span><span class="hl-12">/</span><span class="hl-4">i</span><span class="hl-1">.</span><span class="hl-6">test</span><span class="hl-1">(</span><span class="hl-2">flag</span><span class="hl-1">.</span><span class="hl-2">label</span><span class="hl-1">))</span><br/><span class="hl-1">    .</span><span class="hl-6">filter</span><span class="hl-1">((</span><span class="hl-2">flag</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-12"> /</span><span class="hl-13">\b</span><span class="hl-14">(</span><span class="hl-12">received</span><span class="hl-13">|</span><span class="hl-12">obtained</span><span class="hl-13">|</span><span class="hl-12">got</span><span class="hl-13">|</span><span class="hl-12">earned</span><span class="hl-14">)</span><span class="hl-13">\b</span><span class="hl-12">/</span><span class="hl-4">i</span><span class="hl-1">.</span><span class="hl-6">test</span><span class="hl-1">(</span><span class="hl-2">flag</span><span class="hl-1">.</span><span class="hl-2">label</span><span class="hl-1">))</span><br/><span class="hl-1">    .</span><span class="hl-6">map</span><span class="hl-1">((</span><span class="hl-2">flag</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> ({</span><br/><span class="hl-1">      </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-2">flag</span><span class="hl-1">.</span><span class="hl-2">id</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-2">flag</span><span class="hl-1">.</span><span class="hl-2">label</span><span class="hl-1">.</span><span class="hl-6">replace</span><span class="hl-1">(</span><span class="hl-12">/</span><span class="hl-13">\b</span><span class="hl-14">(</span><span class="hl-12">Received</span><span class="hl-13">|</span><span class="hl-12">Obtained</span><span class="hl-13">|</span><span class="hl-12">Got</span><span class="hl-13">|</span><span class="hl-12">Earned</span><span class="hl-14">)</span><span class="hl-13">\b</span><span class="hl-12">\s</span><span class="hl-15">+</span><span class="hl-12">/</span><span class="hl-4">i</span><span class="hl-1">, </span><span class="hl-3">&quot;&quot;</span><span class="hl-1">),</span><br/><span class="hl-1">      </span><span class="hl-2">obtained:</span><span class="hl-1"> </span><span class="hl-2">flag</span><span class="hl-1">.</span><span class="hl-2">value</span><br/><span class="hl-1">    }));</span><br/><span class="hl-1">}</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">badges</span><span class="hl-1"> = </span><span class="hl-6">getBadgeFlags</span><span class="hl-1">(</span><span class="hl-2">result</span><span class="hl-1">.</span><span class="hl-2">eventFlags</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">obtainedBadges</span><span class="hl-1"> = </span><span class="hl-2">badges</span><span class="hl-1">.</span><span class="hl-6">filter</span><span class="hl-1">((</span><span class="hl-2">badge</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-2">badge</span><span class="hl-1">.</span><span class="hl-2">obtained</span><span class="hl-1">);</span><br/><br/><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">`Badges: </span><span class="hl-4">${</span><span class="hl-2">obtainedBadges</span><span class="hl-11">.</span><span class="hl-2">length</span><span class="hl-4">}</span><span class="hl-3">/</span><span class="hl-4">${</span><span class="hl-2">badges</span><span class="hl-11">.</span><span class="hl-2">length</span><span class="hl-4">}</span><span class="hl-3">`</span><span class="hl-1">);</span><br/><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">table</span><span class="hl-1">(</span><span class="hl-2">obtainedBadges</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+<p>For Emerald-derived saves, this yields labels like <code>Stone Badge</code>, <code>Knuckle Badge</code>, and <code>Dynamo Badge</code>. If <code>badges.length</code> is <code>0</code>, the save may still parse correctly, but that base game does not currently have labeled badge flags in the bundled PKHeX-derived flag table. In that case, use <code>eventFlags.works</code> only for lower-level progression counters until a title-specific badge mapping is added.</p>
+<p>The flag return shape includes all labeled flags, the subset that are active, and non-zero EventWork counters:</p>
+<pre><code class="ts"><span class="hl-9">// Example ParsedEventFlags</span><br/><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-10">gameKey</span><span class="hl-1">: </span><span class="hl-3">&quot;gen3-emerald&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">flagCount</span><span class="hl-1">: </span><span class="hl-8">2400</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">workCount</span><span class="hl-1">: </span><span class="hl-8">256</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-10">flags</span><span class="hl-1">: [</span><br/><span class="hl-1">    {</span><br/><span class="hl-1">      </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">2151</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">label:</span><span class="hl-1"> </span><span class="hl-3">&quot;Received Stone Badge&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">category:</span><span class="hl-1"> </span><span class="hl-3">&quot;s&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">value:</span><span class="hl-1"> </span><span class="hl-4">true</span><br/><span class="hl-1">    },</span><br/><span class="hl-1">    {</span><br/><span class="hl-1">      </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">2152</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">label:</span><span class="hl-1"> </span><span class="hl-3">&quot;Received Knuckle Badge&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">category:</span><span class="hl-1"> </span><span class="hl-3">&quot;s&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">value:</span><span class="hl-1"> </span><span class="hl-4">false</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  ],</span><br/><span class="hl-1">  </span><span class="hl-10">activeFlags</span><span class="hl-1">: [</span><br/><span class="hl-1">    {</span><br/><span class="hl-1">      </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">2151</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">label:</span><span class="hl-1"> </span><span class="hl-3">&quot;Received Stone Badge&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">category:</span><span class="hl-1"> </span><span class="hl-3">&quot;s&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-2">value:</span><span class="hl-1"> </span><span class="hl-4">true</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  ],</span><br/><span class="hl-1">  </span><span class="hl-10">works</span><span class="hl-1">: [</span><br/><span class="hl-1">    { </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">4</span><span class="hl-1">, </span><span class="hl-2">value:</span><span class="hl-1"> </span><span class="hl-8">12</span><span class="hl-1"> },</span><br/><span class="hl-1">    { </span><span class="hl-2">id:</span><span class="hl-1"> </span><span class="hl-8">17</span><span class="hl-1">, </span><span class="hl-2">value:</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1"> }</span><br/><span class="hl-1">  ]</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h2 id="pkhex-reference" class="tsd-anchor-link">PKHeX Reference<a href="#pkhex-reference" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>PKHeX is used as a reference for vanilla save layout behavior during development. It is not bundled and is not a runtime dependency.</p>
+<h2 id="supported-titles" class="tsd-anchor-link">Supported Titles<a href="#supported-titles" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<h3 id="base-games" class="tsd-anchor-link">Base games<a href="#base-games" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Use these with the preferred <code>parseSave({ baseGame, title?, save })</code> API. If <code>title</code> is omitted, the save is parsed with the base-game layout.</p>
+<table>
+<thead>
+<tr>
+<th>Base Game</th>
+<th>Parser</th>
+<th style="text-align:right">Generation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RB</td>
+<td>gen12</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>YW</td>
+<td>gen12</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>GS</td>
+<td>gen12</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>C</td>
+<td>gen12</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>RS</td>
+<td>gen3</td>
+<td style="text-align:right">3</td>
+</tr>
+<tr>
+<td>E</td>
+<td>gen3</td>
+<td style="text-align:right">3</td>
+</tr>
+<tr>
+<td>FRLG</td>
+<td>gen3</td>
+<td style="text-align:right">3</td>
+</tr>
+<tr>
+<td>DP</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+</tr>
+<tr>
+<td>Pt</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+</tr>
+<tr>
+<td>HGSS</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+</tr>
+<tr>
+<td>BW</td>
+<td>gen45</td>
+<td style="text-align:right">5</td>
+</tr>
+<tr>
+<td>BW2</td>
+<td>gen45</td>
+<td style="text-align:right">5</td>
+</tr>
+<tr>
+<td>XY</td>
+<td>gen6</td>
+<td style="text-align:right">6</td>
+</tr>
+<tr>
+<td>ORAS</td>
+<td>gen6</td>
+<td style="text-align:right">6</td>
+</tr>
+<tr>
+<td>SM</td>
+<td>gen7</td>
+<td style="text-align:right">7</td>
+</tr>
+<tr>
+<td>USUM</td>
+<td>gen7</td>
+<td style="text-align:right">7</td>
+</tr>
+<tr>
+<td>rad_red</td>
+<td>radical-red</td>
+<td style="text-align:right">8</td>
+</tr>
+<tr>
+<td>unbound</td>
+<td>unbound</td>
+<td style="text-align:right">8</td>
+</tr>
+<tr>
+<td>imp</td>
+<td>emerald-imperium</td>
+<td style="text-align:right">8</td>
+</tr>
+<tr>
+<td>null</td>
+<td>pokemon-null</td>
+<td style="text-align:right">8</td>
+</tr>
+<tr>
+<td>run_and_bun</td>
+<td>run-and-bun</td>
+<td style="text-align:right">8</td>
+</tr>
+</tbody>
+</table>
+<h3 id="title-overrides" class="tsd-anchor-link">Title overrides<a href="#title-overrides" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Known titles can be passed as <code>title</code> to enable title-specific save behavior where implemented. Title-only compatibility calls are also supported for these entries.</p>
+<table>
+<thead>
+<tr>
+<th>Title</th>
+<th>Parser</th>
+<th style="text-align:right">Generation</th>
+<th>Base Game</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Emerald</td>
+<td>gen3</td>
+<td style="text-align:right">3</td>
+<td>E</td>
+</tr>
+<tr>
+<td>Fire Red</td>
+<td>gen3</td>
+<td style="text-align:right">3</td>
+<td>FRLG</td>
+</tr>
+<tr>
+<td>Fire Red Omega</td>
+<td>gen3</td>
+<td style="text-align:right">3</td>
+<td>FRLG</td>
+</tr>
+<tr>
+<td>Emerald Kaizo</td>
+<td>gen3</td>
+<td style="text-align:right">3</td>
+<td>E</td>
+</tr>
+<tr>
+<td>Royal Sapphire</td>
+<td>gen3</td>
+<td style="text-align:right">3</td>
+<td>E</td>
+</tr>
+<tr>
+<td>Autumn Red</td>
+<td>gen3</td>
+<td style="text-align:right">3</td>
+<td>FRLG</td>
+</tr>
+<tr>
+<td>Ruby/Sapphire</td>
+<td>gen3</td>
+<td style="text-align:right">3</td>
+<td>RS</td>
+</tr>
+<tr>
+<td>Diamond/Pearl</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+<td>DP</td>
+</tr>
+<tr>
+<td>Platinum</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+<td>Pt</td>
+</tr>
+<tr>
+<td>Platinum Kaizo</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+<td>Pt</td>
+</tr>
+<tr>
+<td>Renegade Platinum</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+<td>Pt</td>
+</tr>
+<tr>
+<td>Platinum Redux</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+<td>Pt</td>
+</tr>
+<tr>
+<td>Heart Gold/Soul Silver</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+<td>HGSS</td>
+</tr>
+<tr>
+<td>Sterling Silver</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+<td>HGSS</td>
+</tr>
+<tr>
+<td>Sacred Gold/Storm Silver</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+<td>HGSS</td>
+</tr>
+<tr>
+<td>Hardlove Gold</td>
+<td>gen45</td>
+<td style="text-align:right">4</td>
+<td>HGSS</td>
+</tr>
+<tr>
+<td>Black/White</td>
+<td>gen45</td>
+<td style="text-align:right">5</td>
+<td>BW</td>
+</tr>
+<tr>
+<td>Black 2/White 2</td>
+<td>gen45</td>
+<td style="text-align:right">5</td>
+<td>BW2</td>
+</tr>
+<tr>
+<td>Blaze Black/Volt White</td>
+<td>gen45</td>
+<td style="text-align:right">5</td>
+<td>BW</td>
+</tr>
+<tr>
+<td>Blaze Black 2/Volt White 2 Redux</td>
+<td>gen45</td>
+<td style="text-align:right">5</td>
+<td>BW2</td>
+</tr>
+<tr>
+<td>Cascade White</td>
+<td>gen45</td>
+<td style="text-align:right">5</td>
+<td>BW2</td>
+</tr>
+<tr>
+<td>Blinding White 2</td>
+<td>gen45</td>
+<td style="text-align:right">5</td>
+<td>BW2</td>
+</tr>
+<tr>
+<td>Vintage White Plus</td>
+<td>gen45</td>
+<td style="text-align:right">5</td>
+<td>BW</td>
+</tr>
+<tr>
+<td>X/Y</td>
+<td>gen6</td>
+<td style="text-align:right">6</td>
+<td>XY</td>
+</tr>
+<tr>
+<td>Sun/Moon</td>
+<td>gen7</td>
+<td style="text-align:right">7</td>
+<td>SM</td>
+</tr>
+<tr>
+<td>Ultra Sun/Ultra Moon</td>
+<td>gen7</td>
+<td style="text-align:right">7</td>
+<td>USUM</td>
+</tr>
+<tr>
+<td>Ancestral X</td>
+<td>gen6</td>
+<td style="text-align:right">6</td>
+<td>XY</td>
+</tr>
+<tr>
+<td>Photonic Sun/Prismatic Moon</td>
+<td>gen7</td>
+<td style="text-align:right">7</td>
+<td>USUM</td>
+</tr>
+<tr>
+<td>Radical Red</td>
+<td>radical-red</td>
+<td style="text-align:right">8</td>
+<td>rad_red</td>
+</tr>
+<tr>
+<td>Pokemon Unbound</td>
+<td>unbound</td>
+<td style="text-align:right">8</td>
+<td>unbound</td>
+</tr>
+<tr>
+<td>Emerald Imperium</td>
+<td>emerald-imperium</td>
+<td style="text-align:right">8</td>
+<td>imp</td>
+</tr>
+<tr>
+<td>Pokemon Null</td>
+<td>pokemon-null</td>
+<td style="text-align:right">8</td>
+<td>null</td>
+</tr>
+<tr>
+<td>Run and Bun</td>
+<td>run-and-bun</td>
+<td style="text-align:right">8</td>
+<td>run_and_bun</td>
+</tr>
+</tbody>
+</table>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#romhack-save-reader"><span>romhack-<wbr/>save-<wbr/>reader</span></a><ul><li><a href="#api"><span>API</span></a></li><li><ul><li><a href="#pokemon-return-shape"><span>Pokemon return shape</span></a></li><li><a href="#hall-of-fame-data"><span>Hall of <wbr/>Fame data</span></a></li><li><a href="#event-flags-and-badges"><span>Event flags and badges</span></a></li></ul></li><li><a href="#pkhex-reference"><span>PK<wbr/>He<wbr/>X <wbr/>Reference</span></a></li><li><a href="#supported-titles"><span>Supported <wbr/>Titles</span></a></li><li><ul><li><a href="#base-games"><span>Base games</span></a></li><li><a href="#title-overrides"><span>Title overrides</span></a></li></ul></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">romhack-save-reader</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
