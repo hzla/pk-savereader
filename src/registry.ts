@@ -29,7 +29,7 @@ const titleProfiles: SaveProfile[] = [
   { key: "firered", title: "Fire Red", aliases: ["Pokemon Fire Red", "FireRed", "Leaf Green", "Pokemon Leaf Green"], parser: "gen3", generation: 3, baseGame: "FRLG", runtimeBaseGame: "g3" },
   { key: "fire-red-omega", title: "Fire Red Omega", aliases: ["FireRed Omega"], parser: "gen3", generation: 3, baseGame: "FRLG", runtimeBaseGame: "g3" },
   { key: "emerald-kaizo", title: "Emerald Kaizo", aliases: [], parser: "gen3", generation: 3, baseGame: "E", runtimeBaseGame: "g3" },
-  { key: "royal-sapphire", title: "Royal Sapphire", aliases: ["Royal Saphire"], parser: "gen3", generation: 3, baseGame: "E", runtimeBaseGame: "g3" },
+  { key: "royal-sapphire", title: "Royal Sapphire", aliases: ["Royal Saphire"], parser: "gen3", generation: 3, baseGame: "RS", runtimeBaseGame: "g3" },
   { key: "autumn-red", title: "Autumn Red", aliases: [], parser: "gen3", generation: 3, baseGame: "FRLG", runtimeBaseGame: "g3" },
   { key: "ruby-sapphire", title: "Ruby/Sapphire", aliases: ["Ruby", "Sapphire", "Pokemon Ruby", "Pokemon Sapphire"], parser: "gen3", generation: 3, baseGame: "RS", runtimeBaseGame: "g3" },
 

@@ -36,7 +36,7 @@ Generated from `src/registry.ts`.
 | Fire Red | gen3 | 3 | FRLG |
 | Fire Red Omega | gen3 | 3 | FRLG |
 | Emerald Kaizo | gen3 | 3 | E |
-| Royal Sapphire | gen3 | 3 | E |
+| Royal Sapphire | gen3 | 3 | RS |
 | Autumn Red | gen3 | 3 | FRLG |
 | Ruby/Sapphire | gen3 | 3 | RS |
 | Diamond/Pearl | gen45 | 4 | DP |

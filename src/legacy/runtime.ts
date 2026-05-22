@@ -1,4 +1,5 @@
 import { legacySources } from "./generatedSources.js";
+import { getGen3VanillaAbilityName, getGen3VanillaItemName, getGen3VanillaMoveName } from "../data/gen3Vanilla.js";
 import { pkhexLocations } from "../data/pkhexLocations.js";
 import type { SaveProfile } from "../types.js";
 
@@ -102,6 +103,9 @@ function buildBaseContext(): LegacyContext {
   context.findImportedSpeciesNameFromHeader = findImportedSpeciesNameFromHeader;
   context.getNicknameFromImportHeader = getNicknameFromImportHeader;
   context.randomizeAbility = () => 0;
+  context.g3ResolveVanillaItemName = (itemId: number) => getGen3VanillaItemName(itemId);
+  context.g3ResolveVanillaMoveName = (moveId: number) => getGen3VanillaMoveName(moveId);
+  context.g3ResolveVanillaAbilityName = (speciesId: number, abilityBit: number) => getGen3VanillaAbilityName(context.requestedBaseGame, speciesId, abilityBit);
   context.typeChart = {};
   context.pokedex = {};
   context.poksData = {};
@@ -133,12 +137,37 @@ function applyPkhexLocationTables(context: LegacyContext): void {
 }
 
 function evaluateLegacySource(context: LegacyContext, sourceName: string, source: string): void {
+  source = patchLegacySource(sourceName, source);
   const capture = captureNames
     .map((name) => `try { if (typeof ${name} !== "undefined") context[${JSON.stringify(name)}] = ${name}; } catch (_) {}`)
     .join("\n");
   const wrapped = `${source}\n\n${capture}\n//# sourceURL=${sourceName}`;
   const fn = new Function("context", `with (context) {\n${wrapped}\n}`);
   fn(context);
+}
+
+function patchLegacySource(sourceName: string, source: string): string {
+  if (!sourceName.endsWith("savereader_g3.js")) {
+    return source;
+  }
+
+  return source
+    .replace(
+      "const itemName = g3NormalizeItemName(emImpItems[itemId]);",
+      "const itemName = g3NormalizeItemName(g3ResolveVanillaItemName(itemId));"
+    )
+    .replace(
+      "const abilityName = g3ResolveAbilityName(speciesName, abilityBit);",
+      "const abilityName = g3ResolveVanillaAbilityName(speciesId, abilityBit);"
+    )
+    .replace(
+      "const moveNames = moveIds\n        .filter((id) => id > 0 && pokeemeraldMoves[id] && pokeemeraldMoves[id] !== 'None')\n        .map((id) => pokeemeraldMoves[id]);",
+      "const moveNames = moveIds\n        .map((id) => ({ id, name: g3ResolveVanillaMoveName(id) }))\n        .filter((move) => move.id > 0 && move.name)\n        .map((move) => move.name);"
+    )
+    .replace(
+      "        abilityName,\n        moveNames",
+      "        abilityName,\n        abilitySlot: abilityBit,\n        moveNames"
+    );
 }
 
 function hydrateSpeciesIndex(context: LegacyContext): void {

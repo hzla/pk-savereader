@@ -24,7 +24,7 @@ export function normalizeLegacyMon(input: any, isParty: boolean, fallbackSlot: n
     gender: normalizeGender(input.gender),
     nature: stringOrUndefined(input.natureName || input.nature),
     ability: stringOrUndefined(input.abilityName || input.ability),
-    abilitySlot: numberOrUndefined(input.abilitySlot || input.abilitySlotId || input.abilityIndex),
+    abilitySlot: numberOrUndefined(input.abilitySlot ?? input.abilitySlotId ?? input.abilityIndex),
     item: stringOrUndefined(input.itemName || input.item),
     moves: Array.isArray(input.moveNames)
       ? input.moveNames.filter(Boolean).map((name: string) => ({ name: String(name) }))

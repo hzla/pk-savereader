@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import { listSupportedTitles, parseSave, resolveSaveProfile, toShowdown } from "../src/index.js";
+import { getGen3VanillaAbilityName, getGen3VanillaItemName, getGen3VanillaMoveName } from "../src/data/gen3Vanilla.js";
 import { parseAdditionalSaveData } from "../src/readers/extra.js";
 import type { SaveProfile } from "../src/types.js";
 
@@ -15,6 +16,7 @@ describe("registry", () => {
     expect(resolveSaveProfile("Pokemon X")).toMatchObject({ parser: "gen6", baseGame: "XY" });
     expect(resolveSaveProfile("Pokemon Sun")).toMatchObject({ parser: "gen7", baseGame: "SM" });
     expect(resolveSaveProfile("Pokemon Ultra Moon")).toMatchObject({ parser: "gen7", baseGame: "USUM" });
+    expect(resolveSaveProfile("Royal Sapphire")).toMatchObject({ parser: "gen3", baseGame: "RS" });
     expect(() => resolveSaveProfile("Crystal Clear")).toThrow(/Pass baseGame/);
   });
 
@@ -189,6 +191,26 @@ describe("parseSave", () => {
     expect(result.hallOfFame).toBeUndefined();
   });
 
+  it("uses PKHeX vanilla Gen 3 item and ability tables for base-game Gen 3 saves", () => {
+    expect(getGen3VanillaItemName(224)).toBe("Thick Club");
+    expect(getGen3VanillaItemName(537)).toBeUndefined();
+    expect(getGen3VanillaAbilityName("RS", 18, 0)).toBe("Keen Eye");
+    expect(getGen3VanillaAbilityName("RS", 18, 1)).toBe("Keen Eye");
+    expect(getGen3VanillaAbilityName("RS", 219, 0)).toBe("Magma Armor");
+    expect(getGen3VanillaAbilityName("RS", 219, 1)).toBe("Flame Body");
+    expect(getGen3VanillaMoveName(354)).toBe("Psycho Boost");
+    expect(getGen3VanillaMoveName(355)).toBeUndefined();
+
+    const parsed = parseSave({ baseGame: "RS", save: buildGen3SapphireSave({ speciesId: 18, itemId: 537, abilityBit: 1, moveIds: [33, 355] }) });
+    expect(parsed.party[0]).toMatchObject({
+      speciesName: "Pidgeot",
+      ability: "Keen Eye",
+      abilitySlot: 1
+    });
+    expect(parsed.party[0].item).toBeUndefined();
+    expect(parsed.party[0].moves.map((move) => move.name)).toEqual(["Tackle"]);
+  });
+
   it("uses explicit Gen 7 base game routing instead of only save-size auto detection", () => {
     expect(() => parseSave({ baseGame: "SM", save: buildGen67Save("USUM") })).toThrow(/Unsupported save size for SM/);
   });
@@ -299,6 +321,44 @@ function writeU32LE(bytes: Uint8Array, offset: number, value: number): void {
 function writeU16BE(bytes: Uint8Array, offset: number, value: number): void {
   bytes[offset] = (value >>> 8) & 0xFF;
   bytes[offset + 1] = value & 0xFF;
+}
+
+function buildGen3SapphireSave(config: { speciesId: number; itemId: number; abilityBit: 0 | 1; moveIds?: number[] }): Uint8Array {
+  const save = new Uint8Array(0x10000);
+  for (let section = 0; section < 14; section++) {
+    const sectorOffset = section * 0x1000;
+    writeU16LE(save, sectorOffset + 0xFF4, section);
+    writeU32LE(save, sectorOffset + 0xFFC, 1);
+  }
+
+  const partyOffset = 0x1000 + 0x234;
+  save[partyOffset] = 1;
+  save.set(makeGen3Mon(config), partyOffset + 4);
+  return save;
+}
+
+function makeGen3Mon(config: { speciesId: number; itemId: number; abilityBit: 0 | 1; moveIds?: number[] }): Uint8Array {
+  const chunk = new Uint8Array(100);
+  const pid = 24;
+  const otId = 0;
+  const key = pid ^ otId;
+  writeU32LE(chunk, 0x00, pid);
+  writeU32LE(chunk, 0x04, otId);
+  chunk.fill(0xFF, 0x08, 0x12);
+  chunk[0x13] = 0x02;
+
+  const decrypted = new Array<number>(12).fill(0);
+  const moves = config.moveIds || [33, 45];
+  decrypted[0] = (config.speciesId & 0xFFFF) | ((config.itemId & 0xFFFF) << 16);
+  decrypted[3] = (moves[0] || 0) | ((moves[1] || 0) << 16);
+  decrypted[4] = (moves[2] || 0) | ((moves[3] || 0) << 16);
+  decrypted[10] = config.abilityBit ? 0x80000000 : 0;
+
+  for (let i = 0; i < decrypted.length; i++) {
+    writeU32LE(chunk, 0x20 + (i * 4), (decrypted[i] ^ key) >>> 0);
+  }
+  chunk[0x54] = 31;
+  return chunk;
 }
 
 function buildGen1Save(_baseGame: "RB" | "YW"): Uint8Array {

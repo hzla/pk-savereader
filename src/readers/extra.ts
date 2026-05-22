@@ -598,7 +598,7 @@ function resolveGen3FlagKey(profile: SaveProfile, detectedGame?: string): string
 }
 
 function speciesName(ctx: LegacyNameContext, id: number): string | undefined {
-  const value = ctx.sav_pok_names?.[id] || ctx.emImpMons?.[id];
+  const value = ctx.sav_pok_names?.[id];
   return value && String(value).trim() ? String(value) : undefined;
 }
 
@@ -606,14 +606,14 @@ function itemName(ctx: LegacyNameContext, id: number): string | undefined {
   if (!id) {
     return undefined;
   }
-  const value = ctx.sav_item_names?.[id] || ctx.g67Items?.[id] || ctx.emImpItems?.[id];
+  const value = ctx.sav_item_names?.[id] || ctx.g67Items?.[id];
   return value && String(value).trim() && value !== "None" ? String(value) : undefined;
 }
 
 function moveIdsToMoves(ctx: LegacyNameContext, ids: number[]): ParsedMove[] {
   return ids
     .filter((id) => id > 0)
-    .map((id) => ({ id, name: String(ctx.sav_move_names?.[id] || ctx.pokeemeraldMoves?.[id] || `Move ${id}`) }));
+    .map((id) => ({ id, name: String(ctx.sav_move_names?.[id] || `Move ${id}`) }));
 }
 
 function genderFromId(id: number): "M" | "F" | "N" | undefined {
