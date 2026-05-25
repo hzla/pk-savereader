@@ -431,7 +431,7 @@ function getRunAndBunExpRequired(species: number, level: number): number {
 function decodeGbaText(bytes: Uint8Array): string {
   let text = "";
   for (const byte of bytes) {
-    if (byte === 0xFF) {
+    if (byte === 0xFF || byte === 0x00) {
       break;
     }
     text += decodeGbaChar(byte);

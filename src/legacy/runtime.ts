@@ -34,7 +34,10 @@ const captureNames = [
   "buildDsSaveDeadMonFromShowdown",
   "resetParsedPokemonGlobalsForGen4Import",
   "getDsSaveLocationGameKey",
+  "g67DecodeString",
   "g3DecodeText",
+  "gen3DecodeExpandedNickname",
+  "gen3DecodeNickname",
   "g3GetNationalSpeciesId",
   "resolveSavLevelFromExperience",
   "get_level",
@@ -147,6 +150,98 @@ function evaluateLegacySource(context: LegacyContext, sourceName: string, source
 }
 
 function patchLegacySource(sourceName: string, source: string): string {
+  if (sourceName.endsWith("savereader.js")) {
+    return source.replace(
+      `    for (let i = 0;i < 10;i++) {
+        if (baseGame == "DP" || baseGame == "Pt" || baseGame == "HGSS") {
+            let letter = textTable[decryptedData[nn_data_offset + i]] || ""
+            nn += letter
+        } else {
+            let letter = String.fromCharCode(decryptedData[nn_data_offset + i])
+            if (decryptedData[nn_data_offset + i] != 65535) {
+                nn += letter
+            }  
+        }
+    }`,
+      `    for (let i = 0;i < 10;i++) {
+        const nicknameWord = decryptedData[nn_data_offset + i]
+        if (nicknameWord === 65535 || nicknameWord === 0) {
+            break
+        }
+        if (baseGame == "DP" || baseGame == "Pt" || baseGame == "HGSS") {
+            let letter = textTable[nicknameWord] || ""
+            nn += letter
+        } else {
+            let letter = String.fromCharCode(nicknameWord)
+            nn += letter
+        }
+    }`
+    );
+  }
+
+  if (sourceName.endsWith("savereader_g6.js")) {
+    return source.replace(
+      `        if (value === 0) {
+            break;
+        }`,
+      `        if (value === 0 || value === 0xFFFF) {
+            break;
+        }`
+    );
+  }
+
+  if (sourceName.endsWith("savereader_pokeemerald.js")) {
+    return source
+      .replace(
+        `            let nn = "";
+            for (let i = 0; i < 10; i++) {
+                let letter = gen3TextTable[saveFile.getUint8(offset + i, true)] || "";
+                nn += letter;
+            }`,
+        `            let nn = "";
+            for (let i = 0; i < 10; i++) {
+                const nicknameByte = saveFile.getUint8(offset + i, true);
+                if (nicknameByte === 0xFF || nicknameByte === 0x00) {
+                    break;
+                }
+                let letter = gen3TextTable[nicknameByte] || "";
+                nn += letter;
+            }`
+      )
+      .replace(
+        `function gen3ResolveGrowthRate(speciesName) {`,
+        `function gen3HasNicknameTerminator(bytes) {
+    if (!bytes) {
+        return true;
+    }
+    for (let i = 0; i < bytes.length; i++) {
+        const value = bytes[i] & 0xFF;
+        if (value === 0xFF || value === 0x00) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function gen3DecodeExpandedNickname(nicknameBytes, extraChars) {
+    const nickname = gen3DecodeNickname(nicknameBytes);
+    if (gen3HasNicknameTerminator(nicknameBytes)) {
+        return nickname;
+    }
+    return \`\${nickname}\${(extraChars || []).join("")}\`.trim();
+}
+
+function gen3ResolveGrowthRate(speciesName) {`
+      )
+      .replace(
+        `    const nickname = \`\${gen3DecodeNickname(chunk.slice(0x08, 0x12))}\${gen3TextTable[(decrypted[growthIndex * 3 + 1] >>> 21) & 0xFF] || ""}\${gen3TextTable[(decrypted[growthIndex * 3 + 2] >>> 14) & 0xFF] || ""}\`.trim();`,
+        `    const nickname = gen3DecodeExpandedNickname(chunk.slice(0x08, 0x12), [
+        gen3TextTable[(decrypted[growthIndex * 3 + 1] >>> 21) & 0xFF] || "",
+        gen3TextTable[(decrypted[growthIndex * 3 + 2] >>> 14) & 0xFF] || ""
+    ]);`
+      );
+  }
+
   if (!sourceName.endsWith("savereader_g3.js")) {
     return source;
   }

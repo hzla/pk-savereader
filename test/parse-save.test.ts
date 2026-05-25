@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import { listSupportedTitles, parseSave, resolveSaveProfile, toShowdown } from "../src/index.js";
 import { getGen3VanillaAbilityName, getGen3VanillaItemName, getGen3VanillaMoveName } from "../src/data/gen3Vanilla.js";
+import { createLegacyContext } from "../src/legacy/runtime.js";
 import { parseAdditionalSaveData } from "../src/readers/extra.js";
 import type { SaveProfile } from "../src/types.js";
 
@@ -55,6 +56,68 @@ describe("parseSave", () => {
     expect(result.eventFlags?.gameKey).toBe("platinum");
     expect(result.eventFlags?.activeFlags.length).toBeGreaterThan(0);
     expect(result.eventFlags?.activeFlags.some((flag) => flag.label.includes("Cynthia"))).toBe(true);
+  });
+
+  it("stops Gen 4 PKM nickname decoding at the terminator", () => {
+    const ctx = createLegacyContext({
+      key: "renegade-platinum",
+      title: "Renegade Platinum",
+      aliases: [],
+      parser: "gen45",
+      generation: 4,
+      baseGame: "Pt"
+    });
+    const showdown = ctx.parsePKM(makeGen4LegacyPkmWithNicknameTrash(), false, 0);
+
+    expect(showdown.split("\n")[0]).toMatch(/^Kei \(Dusknoir\)/);
+    expect(showdown).not.toContain("Keiull");
+  });
+
+  it("stops Gen 5 PKM nickname decoding at the terminator", () => {
+    const ctx = createLegacyContext({
+      key: "black-white",
+      title: "Black/White",
+      aliases: [],
+      parser: "gen45",
+      generation: 5,
+      baseGame: "BW",
+      runtimeBaseGame: "BW",
+      baseVersion: "BW"
+    });
+    const showdown = ctx.parsePKM(makeGen5LegacyPkmWithNicknameTrash(), false, 0);
+
+    expect(showdown.split("\n")[0]).toMatch(/^Kei \(Dusknoir\)/);
+    expect(showdown).not.toContain("Keiull");
+  });
+
+  it("stops Gen 6/7 nickname decoding at erased string words", () => {
+    const ctx = createLegacyContext({
+      key: "x-y",
+      title: "X/Y",
+      aliases: [],
+      parser: "gen6",
+      generation: 6,
+      baseGame: "XY",
+      runtimeBaseGame: "g6"
+    });
+
+    expect(ctx.g67DecodeString(makeUtf16Words(["K", "e", "i", 0xFFFF, "u", "l", "l"]), 6)).toBe("Kei");
+  });
+
+  it("does not append Emerald expansion packed nickname chars after a terminator", () => {
+    const ctx = createLegacyContext({
+      key: "emerald-imperium",
+      title: "Emerald Imperium",
+      aliases: [],
+      parser: "emerald-imperium",
+      generation: 8,
+      baseGame: "imp",
+      runtimeBaseGame: "imp"
+    });
+    const nicknameBytes = new Uint8Array(10);
+    writeGbaText(nicknameBytes, 0, 10, "Kei");
+
+    expect(ctx.gen3DecodeExpandedNickname(nicknameBytes, ["u", "l"])).toBe("Kei");
   });
 
   it("keeps title overrides when baseGame is provided", async () => {
@@ -189,6 +252,19 @@ describe("parseSave", () => {
     });
     expect(result.eventFlags).toBeUndefined();
     expect(result.hallOfFame).toBeUndefined();
+  });
+
+  it("stops Run & Bun nickname decoding at zero padding", () => {
+    const save = buildRunAndBunSave();
+    const nicknameOffset = 0x1000 + 0x238 + 8;
+    save[nicknameOffset + 3] = 0x00;
+    save[nicknameOffset + 4] = encodeGbaChar("U");
+    save[nicknameOffset + 5] = encodeGbaChar("L");
+    save[nicknameOffset + 6] = encodeGbaChar("L");
+
+    const result = parseSave({ baseGame: "run_and_bun", title: "Pokemon Run & Bun", save });
+
+    expect(result.party[0].nickname).toBe("BUN");
   });
 
   it("uses PKHeX vanilla Gen 3 item and ability tables for base-game Gen 3 saves", () => {
@@ -359,6 +435,77 @@ function makeGen3Mon(config: { speciesId: number; itemId: number; abilityBit: 0 
   }
   chunk[0x54] = 31;
   return chunk;
+}
+
+function makeGen4LegacyPkmWithNicknameTrash(): Uint8Array {
+  return makeDsLegacyPkmWithNicknameTrash([
+    encodeGen4EnglishChar("K"),
+    encodeGen4EnglishChar("e"),
+    encodeGen4EnglishChar("i"),
+    0xFFFF,
+    encodeGen4EnglishChar("u"),
+    encodeGen4EnglishChar("l"),
+    encodeGen4EnglishChar("l")
+  ]);
+}
+
+function makeGen5LegacyPkmWithNicknameTrash(): Uint8Array {
+  return makeDsLegacyPkmWithNicknameTrash([
+    "K".charCodeAt(0),
+    "e".charCodeAt(0),
+    "i".charCodeAt(0),
+    0xFFFF,
+    "u".charCodeAt(0),
+    "l".charCodeAt(0),
+    "l".charCodeAt(0)
+  ]);
+}
+
+function makeDsLegacyPkmWithNicknameTrash(nicknameWords: number[]): Uint8Array {
+  const chunk = new Uint8Array(136);
+  const pid = 24;
+  const checksum = 0x1234;
+  const decrypted = new Array<number>(64).fill(0);
+  const monDataOffset = 0;
+  const moveDataOffset = 16;
+  const nicknameOffset = 32;
+  const exp = 100000;
+
+  decrypted[monDataOffset] = 477;
+  decrypted[monDataOffset + 4] = exp & 0xFFFF;
+  decrypted[monDataOffset + 5] = (exp >>> 16) & 0xFFFF;
+  decrypted[moveDataOffset] = 33;
+
+  for (let i = 0; i < nicknameWords.length; i++) {
+    decrypted[nicknameOffset + i] = nicknameWords[i];
+  }
+
+  writeU32LE(chunk, 0, pid);
+  writeU16LE(chunk, 6, checksum);
+  const encryptedWords = encryptGen45Words(decrypted, checksum);
+  for (let i = 0; i < encryptedWords.length; i++) {
+    writeU16LE(chunk, 8 + (i * 2), encryptedWords[i]);
+  }
+  return chunk;
+}
+
+function makeUtf16Words(values: Array<string | number>): Uint8Array {
+  const bytes = new Uint8Array(values.length * 2);
+  values.forEach((value, index) => {
+    const code = typeof value === "number" ? value : value.charCodeAt(0);
+    writeU16LE(bytes, index * 2, code);
+  });
+  return bytes;
+}
+
+function encryptGen45Words(words: number[], checksum: number): number[] {
+  const encrypted: number[] = [];
+  let seed = checksum >>> 0;
+  for (const word of words) {
+    seed = (Math.imul(0x41C64E6D, seed) + 0x6073) >>> 0;
+    encrypted.push((word ^ ((seed >>> 16) & 0xFFFF)) & 0xFFFF);
+  }
+  return encrypted;
 }
 
 function buildGen1Save(_baseGame: "RB" | "YW"): Uint8Array {
