@@ -201,7 +201,7 @@ function patchLegacySource(sourceName: string, source: string): string {
         `            let nn = "";
             for (let i = 0; i < 10; i++) {
                 const nicknameByte = saveFile.getUint8(offset + i, true);
-                if (nicknameByte === 0xFF || nicknameByte === 0x00) {
+                if (nicknameByte === 0xFF) {
                     break;
                 }
                 let letter = gen3TextTable[nicknameByte] || "";
@@ -216,7 +216,7 @@ function patchLegacySource(sourceName: string, source: string): string {
     }
     for (let i = 0; i < bytes.length; i++) {
         const value = bytes[i] & 0xFF;
-        if (value === 0xFF || value === 0x00) {
+        if (value === 0xFF) {
             return true;
         }
     }
@@ -233,6 +233,7 @@ function gen3DecodeExpandedNickname(nicknameBytes, extraChars) {
 
 function gen3ResolveGrowthRate(speciesName) {`
       )
+      .replace("        if (v === 0xFF || v === 0x00) {", "        if (v === 0xFF) {")
       .replace(
         `    const nickname = \`\${gen3DecodeNickname(chunk.slice(0x08, 0x12))}\${gen3TextTable[(decrypted[growthIndex * 3 + 1] >>> 21) & 0xFF] || ""}\${gen3TextTable[(decrypted[growthIndex * 3 + 2] >>> 14) & 0xFF] || ""}\`.trim();`,
         `    const nickname = gen3DecodeExpandedNickname(chunk.slice(0x08, 0x12), [
@@ -247,6 +248,7 @@ function gen3ResolveGrowthRate(speciesName) {`
   }
 
   return source
+    .replace("        if (value === 0xFF || value === 0x00) {", "        if (value === 0xFF) {")
     .replace(
       "const itemName = g3NormalizeItemName(emImpItems[itemId]);",
       "const itemName = g3NormalizeItemName(g3ResolveVanillaItemName(itemId));"

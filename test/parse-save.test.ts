@@ -120,6 +120,32 @@ describe("parseSave", () => {
     expect(ctx.gen3DecodeExpandedNickname(nicknameBytes, ["u", "l"])).toBe("Kei");
   });
 
+  it("preserves spaces in Gen 3 nicknames", () => {
+    const vanillaCtx = createLegacyContext({
+      key: "ruby-sapphire",
+      title: "Ruby/Sapphire",
+      aliases: [],
+      parser: "gen3",
+      generation: 3,
+      baseGame: "RS",
+      runtimeBaseGame: "g3"
+    });
+    const emeraldExpansionCtx = createLegacyContext({
+      key: "emerald-imperium",
+      title: "Emerald Imperium",
+      aliases: [],
+      parser: "emerald-imperium",
+      generation: 8,
+      baseGame: "imp",
+      runtimeBaseGame: "imp"
+    });
+    const nicknameBytes = new Uint8Array(10);
+    writeGbaText(nicknameBytes, 0, 10, "MR MIME");
+
+    expect(vanillaCtx.g3DecodeText(nicknameBytes, 0, 10)).toBe("MR MIME");
+    expect(emeraldExpansionCtx.gen3DecodeExpandedNickname(nicknameBytes, ["X"])).toBe("MR MIME");
+  });
+
   it("keeps title overrides when baseGame is provided", async () => {
     const save = await readFile("fixtures/saves/renegade-platinum.sav");
     const result = parseSave({ baseGame: "Pt", title: "Renegade Platinum", save });
@@ -254,17 +280,14 @@ describe("parseSave", () => {
     expect(result.hallOfFame).toBeUndefined();
   });
 
-  it("stops Run & Bun nickname decoding at zero padding", () => {
+  it("preserves spaces in Run & Bun nicknames", () => {
     const save = buildRunAndBunSave();
     const nicknameOffset = 0x1000 + 0x238 + 8;
-    save[nicknameOffset + 3] = 0x00;
-    save[nicknameOffset + 4] = encodeGbaChar("U");
-    save[nicknameOffset + 5] = encodeGbaChar("L");
-    save[nicknameOffset + 6] = encodeGbaChar("L");
+    writeGbaText(save, nicknameOffset, 10, "BUN BOY");
 
     const result = parseSave({ baseGame: "run_and_bun", title: "Pokemon Run & Bun", save });
 
-    expect(result.party[0].nickname).toBe("BUN");
+    expect(result.party[0].nickname).toBe("BUN BOY");
   });
 
   it("uses PKHeX vanilla Gen 3 item and ability tables for base-game Gen 3 saves", () => {
